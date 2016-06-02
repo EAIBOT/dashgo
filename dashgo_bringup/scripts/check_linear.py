@@ -3,8 +3,6 @@
 import rospy
 from geometry_msgs.msg import Twist, Point
 from math import copysign, sqrt, pow
-from dynamic_reconfigure.server import Server
-import dynamic_reconfigure.client
 import tf
 
 class CalibrateLinear():
@@ -31,7 +29,7 @@ class CalibrateLinear():
         
  
         # The base frame is base_footprint for the TurtleBot but base_link for Pi Robot
-        self.base_frame = rospy.get_param('~base_frame', '/base_link')
+        self.base_frame = rospy.get_param('~base_frame', '/base_footprint')
 
         # The odom frame is usually just /odom
         self.odom_frame = rospy.get_param('~odom_frame', '/odom')

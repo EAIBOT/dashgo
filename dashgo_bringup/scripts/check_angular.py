@@ -45,7 +45,7 @@ class CalibrateAngular():
         self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=5)
  
         # The base frame is usually base_link or base_footprint
-        self.base_frame = rospy.get_param('~base_frame', '/base_link')
+        self.base_frame = rospy.get_param('~base_frame', '/base_footprint')
 
         # The odom frame is usually just /odom
         self.odom_frame = rospy.get_param('~odom_frame', '/odom')
