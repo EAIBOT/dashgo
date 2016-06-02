@@ -1,0 +1,5 @@
+<launch>
+   <node name="arduino" pkg="dashgo_bringup" type="dashgo_driver.py" output="screen">
+      <rosparam file="$(find dashgo_bringup)/config/my_dashgo_params.yaml" command="load" />
+   </node>
+</launch>
