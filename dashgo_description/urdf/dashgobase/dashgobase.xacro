@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<robot name="box_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+   <!-- Define a number of dimensions using properties -->
+   <property name="torso_offset_x" value="0.0" />
+   <property name="torso_offset_y" value="0.0" />
+   <property name="torso_offset_z" value="0.23" /> <!--base_height/2+torso_height/2 -->
+
+   <!-- Include all component files -->
+   <xacro:include filename="$(find dashgo_description)/urdf/dashgobase/materials.urdf.xacro" />
+   <xacro:include filename="$(find dashgo_description)/urdf/dashgobase/base.urdf.xacro" />
+   <xacro:include filename="$(find dashgo_description)/urdf/dashgobase/torso.urdf.xacro" />
+   
+   <!-- Add the base and wheels -->
+   <base name="base" color="Black"/>
+   
+   <!-- Attach the torso -->
+<!--
+   <torso name="torso" parent="base" color="Grey">
+      <origin xyz="${torso_offset_x} ${torso_offset_y} ${torso_offset_z}" rpy="0 0 0" />
+   </torso>
+-->
+
+ <joint name="laser" type="fixed">
+    <origin xyz="0.00 0.00 0.20" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_laser_link" />
+  </joint>
+
+  <link name="base_laser_link">
+    <visual>
+      <geometry>
+        <box size="0.00 0.05 0.06" />
+      </geometry>
+      <material name="Green" />
+    </visual>
+    <inertial>
+      <mass value="0.000001" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+        iyy="0.0001" iyz="0.0"
+        izz="0.0001" />
+    </inertial>
+  </link>
+</robot>
+
+
