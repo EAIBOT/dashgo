@@ -1,0 +1,8 @@
+<launch>
+
+  <node pkg="mpu6050_serial_to_imu" type="mpu6050_serial_to_imu_node" name="mpu6050_serial_to_imu_node" required="true">
+    <param name="port" value="/dev/ttyACM1"/>
+    <param name="imu_frame_id" value="base_footprint"/>
+  </node>
+
+</launch>
