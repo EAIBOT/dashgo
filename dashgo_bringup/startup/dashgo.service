@@ -1,0 +1,12 @@
+[Unit]
+Description=dashgo startup
+
+[Service]
+Restart=always
+RestartSec=30
+ExecStart=/usr/sbin/dashgo-start 
+ExecStop=/usr/sbin/dashgo-stop
+ExecRestart=/usr/sbin/dashgo-restart
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+log_file=/tmp/dashgo-upstart.log
+DATE=`date`
+echo "$DATE: dashgo-stop" >> $log_file
+
+source /opt/ros/indigo/setup.bash
+source /home/pi/dashgo_ws/devel/setup.bash
+
+for i in $( rosnode list ); do
+    rosnode kill $i;
+done
+
+killall roslaunch

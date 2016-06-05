@@ -1,0 +1,9 @@
+#!/bin/bash
+
+log_file=/tmp/dashgo-upstart.log
+DATE=`date`
+echo "$DATE: dashgo-stop" >> $log_file
+
+/usr/sbin/dashgo-stop
+sleep 2
+/usr/sbin/dashgo-start 

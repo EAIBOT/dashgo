@@ -27,7 +27,7 @@ def normalize_angle(angle):
 class CalibrateRobot:
   def __init__(self):
     self.lock = threading.Lock()
-    self.sub_imu = rospy.Subscriber('imu_data', Imu, self.imu_cb)
+    self.sub_imu = rospy.Subscriber('imu', Imu, self.imu_cb)
     self.last_imu_angle = 0
     self.imu_angle = 0
     while not rospy.is_shutdown():
