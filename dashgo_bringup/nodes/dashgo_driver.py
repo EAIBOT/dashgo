@@ -461,25 +461,25 @@ class BaseController:
     def poll(self):
         now = rospy.Time.now()
         if now > self.t_next:
-            try:
-                left_pidin, right_pidin = self.arduino.get_pidin()
-            except:
-                rospy.logerr("getpidout exception count: ")
-                return
+            #try:
+            #    left_pidin, right_pidin = self.arduino.get_pidin()
+            #except:
+            #    rospy.logerr("getpidout exception count: ")
+            #    return
 
-            self.lEncoderPub.publish(left_pidin)
-            self.rEncoderPub.publish(right_pidin)
-            try:
-                left_pidout, right_pidout = self.arduino.get_pidout()
-            except:
-                rospy.logerr("getpidout exception count: ")
-                return
-            self.lPidoutPub.publish(left_pidout)
-            self.rPidoutPub.publish(right_pidout)
+            #self.lEncoderPub.publish(left_pidin)
+            #self.rEncoderPub.publish(right_pidin)
+            #try:
+            #    left_pidout, right_pidout = self.arduino.get_pidout()
+            #except:
+            #    rospy.logerr("getpidout exception count: ")
+            #    return
+            #self.lPidoutPub.publish(left_pidout)
+            #self.rPidoutPub.publish(right_pidout)
             # Read the encoders
             try:
                 left_enc, right_enc = self.arduino.get_encoder_counts()
-                #rospy.loginfo("left_enc: " + str(left_enc)+"right_enc: " + str(right_enc))
+                rospy.loginfo("left_enc: " + str(left_enc)+"right_enc: " + str(right_enc))
             except:
                 self.bad_encoder_count += 1
                 rospy.logerr("Encoder exception count: " + str(self.bad_encoder_count))
@@ -556,12 +556,12 @@ class BaseController:
             odom.twist.twist.angular.z = vth
 
             # todo sensor_state.distance == 0
-            if self.v_des_left == 0 and self.v_des_right == 0:
-                odom.pose.covariance = ODOM_POSE_COVARIANCE2
-                odom.twist.covariance = ODOM_TWIST_COVARIANCE2
-            else:
-                odom.pose.covariance = ODOM_POSE_COVARIANCE
-                odom.twist.covariance = ODOM_TWIST_COVARIANCE
+            #if self.v_des_left == 0 and self.v_des_right == 0:
+            #    odom.pose.covariance = ODOM_POSE_COVARIANCE2
+            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE2
+            #else:
+            #    odom.pose.covariance = ODOM_POSE_COVARIANCE
+            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE
 
             self.odomPub.publish(odom)
             

@@ -15,7 +15,7 @@ base_frame: base_footprint
 #wheel_diameter: 0.1212
 wheel_diameter: 0.125
 #wheel_diameter: 0.125
-wheel_track: 0.340
+wheel_track: 0.335
 encoder_resolution: 1200 # from Pololu for 13*34*4 motors
 gear_reduction: 1.0
 motors_reversed: False

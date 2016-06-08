@@ -1,0 +1,6 @@
+<launch>
+  <include file="$(find dashgo_nav)/launch/gmapping.launch"/>
+
+  <include file="$(find dashgo_nav)/launch/move_base.launch"/>
+
+</launch>
