@@ -4,7 +4,7 @@
 
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen" clear_params="true">
     <param name="odom_frame" value="odom"/>
-    <param name="map_update_interval" value="30.0"/>
+    <param name="map_update_interval" value="0.1"/>
     <!-- Set maxUrange < actual maximum range of the Laser -->
     <param name="maxRange" value="5.0"/>
     <param name="maxUrange" value="4.5"/>
@@ -19,12 +19,13 @@
     <param name="srr" value="0.01"/>
     <param name="srt" value="0.02"/>
     <param name="str" value="0.01"/>
+    <param name="minimumScore" value="30"/>
     <param name="stt" value="0.02"/>
-    <param name="linearUpdate" value="0.5"/>
-    <param name="angularUpdate" value="0.436"/>
+    <param name="linearUpdate" value="0.05"/>
+    <param name="angularUpdate" value="0.0436"/>
     <param name="temporalUpdate" value="-1.0"/>
     <param name="resampleThreshold" value="0.5"/>
-    <param name="particles" value="80"/>
+    <param name="particles" value="5"/>
   <!--
     <param name="xmin" value="-50.0"/>
     <param name="ymin" value="-50.0"/>
