@@ -535,13 +535,13 @@ class BaseController:
             quaternion.w = cos(self.th / 2.0)
     
             # Create the odometry transform frame broadcaster.
-            self.odomBroadcaster.sendTransform(
-                (self.x, self.y, 0), 
-                (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
-                rospy.Time.now(),
-                self.base_frame,
-                "odom"
-                )
+            #self.odomBroadcaster.sendTransform(
+            #    (self.x, self.y, 0), 
+            #    (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
+            #    rospy.Time.now(),
+            #    self.base_frame,
+            #    "odom"
+            #    )
     
             odom = Odometry()
             odom.header.frame_id = "odom"
@@ -556,12 +556,12 @@ class BaseController:
             odom.twist.twist.angular.z = vth
 
             # todo sensor_state.distance == 0
-            #if self.v_des_left == 0 and self.v_des_right == 0:
-            #    odom.pose.covariance = ODOM_POSE_COVARIANCE2
-            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE2
-            #else:
-            #    odom.pose.covariance = ODOM_POSE_COVARIANCE
-            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE
+            if self.v_des_left == 0 and self.v_des_right == 0:
+                odom.pose.covariance = ODOM_POSE_COVARIANCE2
+                odom.twist.covariance = ODOM_TWIST_COVARIANCE2
+            else:
+                odom.pose.covariance = ODOM_POSE_COVARIANCE
+                odom.twist.covariance = ODOM_TWIST_COVARIANCE
 
             self.odomPub.publish(odom)
             

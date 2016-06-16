@@ -59,7 +59,7 @@ class NavSquare():
         # Set the parameters for the target square
         goal_distance = rospy.get_param("~goal_distance", 1.0)      # meters
         goal_angle = radians(rospy.get_param("~goal_angle", 90))    # degrees converted to radians
-        linear_speed = rospy.get_param("~linear_speed", 0.15)        # meters per second
+        linear_speed = rospy.get_param("~linear_speed", 0.20)        # meters per second
         angular_speed = rospy.get_param("~angular_speed", 0.3)      # radians per second
         angular_tolerance_t = radians(rospy.get_param("~angular_tolerance", 0.3)) # degrees to radians
         angular_tolerance = angular_tolerance_t
@@ -150,21 +150,30 @@ class NavSquare():
             # Track how far we have turned
             turn_angle = 0
             
-            # Begin the rotation
-            while abs(turn_angle + angular_tolerance) < abs(goal_angle) and not rospy.is_shutdown():
-                # Publish the Twist message and sleep 1 cycle         
-                self.cmd_vel.publish(move_cmd)
-                
-                r.sleep()
-                
-                # Get the current rotation
+            if((i%4)==0):
                 (position, rotation) = self.get_odom()
-                
-                # Compute the amount of rotation since the last lopp
-                delta_angle = normalize_angle(rotation - last_angle)
-                
-                turn_angle += delta_angle
-                last_angle = rotation
+                while(rotation<1.57):
+                    self.cmd_vel.publish(move_cmd)
+                    r.sleep()
+                    (position, rotation) = self.get_odom()
+            if((i%4)==1):
+                (position, rotation) = self.get_odom()
+                while(rotation>0):
+                    self.cmd_vel.publish(move_cmd)
+                    r.sleep()
+                    (position, rotation) = self.get_odom()
+            if((i%4)==2):
+                (position, rotation) = self.get_odom()
+                while(abs(rotation)>1.57):
+                    self.cmd_vel.publish(move_cmd)
+                    r.sleep()
+                    (position, rotation) = self.get_odom()
+            if((i%4)==3):
+                (position, rotation) = self.get_odom()
+                while(rotation>0):
+                    self.cmd_vel.publish(move_cmd)
+                    r.sleep()
+                    (position, rotation) = self.get_odom()
 
             rospy.loginfo("turn_angle:"+str(turn_angle))
             rospy.loginfo("goal_angle:"+str(goal_angle))

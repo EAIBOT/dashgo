@@ -61,8 +61,7 @@ class NavSquare():
         goal_angle = radians(rospy.get_param("~goal_angle", 90))    # degrees converted to radians
         linear_speed = rospy.get_param("~linear_speed", 0.15)        # meters per second
         angular_speed = rospy.get_param("~angular_speed", 0.3)      # radians per second
-        angular_tolerance_t = radians(rospy.get_param("~angular_tolerance", 0.3)) # degrees to radians
-        angular_tolerance = angular_tolerance_t
+        angular_tolerance = radians(rospy.get_param("~angular_tolerance", 2)) # degrees to radians
         
         # Publisher to control the robot's speed
         self.cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=5)
@@ -81,7 +80,7 @@ class NavSquare():
         rospy.sleep(2)
         
         # Set the odom frame
-        #self.odom_frame = '/odom'
+       # self.odom_frame = '/odom'
         self.odom_frame = '/odom_combined'
         
         # Find out if the robot uses /base_link or /base_footprint
@@ -100,7 +99,7 @@ class NavSquare():
         position = Point()
 
         # Cycle through the four sides of the square
-        for i in range(8):
+        for i in range(4):
             # Initialize the movement command
             move_cmd = Twist()
             
@@ -115,10 +114,7 @@ class NavSquare():
             
             # Keep track of the distance traveled
             distance = 0
-            if (i%2==1):
-                goal_distance = 0.2 
-            else:
-                goal_distance = 1.0
+            
             # Enter the loop to move along a side
             while distance < goal_distance and not rospy.is_shutdown():
                 # Publish the Twist message and sleep 1 cycle         
@@ -139,10 +135,7 @@ class NavSquare():
             rospy.sleep(1.0)
             
             # Set the movement command to a rotation
-            if (i%4<=1):
-                move_cmd.angular.z = angular_speed
-            else:
-                move_cmd.angular.z = -1*angular_speed
+            move_cmd.angular.z = angular_speed
             
             # Track the last angle measured
             last_angle = rotation
@@ -166,9 +159,6 @@ class NavSquare():
                 turn_angle += delta_angle
                 last_angle = rotation
 
-            rospy.loginfo("turn_angle:"+str(turn_angle))
-            rospy.loginfo("goal_angle:"+str(goal_angle))
-            rospy.loginfo("last_angle:"+str(last_angle))
             move_cmd = Twist()
             self.cmd_vel.publish(move_cmd)
             rospy.sleep(1.0)
