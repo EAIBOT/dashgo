@@ -8,6 +8,27 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
 
+std::string string_to_hex(const std::string& input)
+{
+    static const char* const lut = "0123456789ABCDEF";
+    size_t len = input.length();
+
+    std::string output;
+    output.reserve(2 * len);
+    for (size_t i = 0; i < len; ++i)
+    {
+        const unsigned char c = input[i];
+        output.push_back(lut[c >> 4]);
+        output.push_back(lut[c & 15]);
+    }
+    return output;
+}
+
+std::string char_to_hex(char c){
+   static const char* const lut = "0123456789ABCDEF";
+   return ""+lut[c >> 4] + lut[c & 15]; 
+}
+
 
 bool zero_orientation_set = false;
 
@@ -18,6 +39,7 @@ bool set_zero_orientation(std_srvs::Empty::Request&,
   zero_orientation_set = false;
   return true;
 }
+
 
 int main(int argc, char** argv)
 {
@@ -36,7 +58,7 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "mpu6050_serial_to_imu_node");
 
   ros::NodeHandle private_node_handle("~");
-  private_node_handle.param<std::string>("port", port, "/dev/ttyACM0");
+  private_node_handle.param<std::string>("port", port, "/dev/ttyUSB0");
   private_node_handle.param<std::string>("tf_parent_frame_id", tf_parent_frame_id, "imu_base");
   private_node_handle.param<std::string>("tf_frame_id", tf_frame_id, "imu");
   private_node_handle.param<std::string>("imu_frame_id", imu_frame_id, "imu_base");
@@ -48,95 +70,55 @@ int main(int argc, char** argv)
 
   ros::Rate r(1000); // 1000 hz
 
+  uint8_t size=15;
+  //char input[16];
   while(ros::ok())
   {
     try
     {
       if (ser.isOpen())
       {
+        //ser.write("$MIA,I,B,115200,R,100,D,Y,Y*C4");
         // read string from serial device
         if(ser.available())
         {
-          std_msgs::String result;
-          result.data = ser.readline(ser.available(), "\n");
-
-          std::string input = partial_line + result.data;
-
-          if (input.at( input.length() - 1 ) == '\n')
-          {
-            // line complete, delete partial_line var
-            partial_line = "";
-
-            // TODO: check if line is long enough??
-
-            if (input.compare(0,53,"Send any character to begin DMP programming and demo:") == 0 )
-            {
-              ROS_DEBUG("Sending 'A' to start sending of IMU data.");
-              ser.write("A");
-            }
-
-            // parse line, get quaternion values
-            if (input.compare(0,2,"$\x02") == 0 && (input.size() == 14))
-            {
-              uint w = (((0xff &(char)input[2]) << 8) | 0xff &(char)input[3]);
-              ROS_DEBUG("w = %04x", w );
-
-              uint x = (((0xff &(char)input[4]) << 8) | 0xff &(char)input[5]);
-              ROS_DEBUG("x = %04x", x );
-
-              uint y = (((0xff &(char)input[6]) << 8) | 0xff &(char)input[7]);
-              ROS_DEBUG("y = %04x", y );
-
-              uint z = (((0xff &(char)input[8]) << 8) | 0xff &(char)input[9]);
-              ROS_DEBUG("z = %04x", z );
-
-              double wf = w/16384.0;
-              double xf = x/16384.0;
-              double yf = y/16384.0;
-              double zf = z/16384.0;
-
-              if (wf >= 2.0)
-              {
-                wf = -4.0 +wf;
+          std::string input_0 = ser.read(size); 
+          std::string input_hex = string_to_hex(input_0); 
+          //ROS_ERROR_STREAM("input_str: " << input_hex);
+          std::string input;
+          std::string flag;
+          std::string::size_type position;
+          position = input_hex.find("AA00");
+          if (position != input_hex.npos) {
+              //ROS_ERROR_STREAM("input_str: " << position);
+              if(position!=0){
+                  std::string input_1 = ser.read((position/2)); 
+                  input=input_0+input_1;
+              }else{
+                  input=input_0;
               }
-
-              if (xf >= 2.0)
-              {
-                xf = -4.0 +xf;
-              }
-
-              if (yf >= 2.0)
-              {
-                yf = -4.0 +yf;
-              }
-
-              if (zf >= 2.0)
-              {
-                zf = -4.0 +zf;
-              }
-
-              tf::Quaternion orientation(xf, yf, zf, wf);
+       
+              char *chr = &input[0u];
+              short angle = ((chr[3] & 0xFF) | ((chr[4] << 8) & 0XFF00));
+              //ROS_ERROR_STREAM("angle: " << (double)angle/100.0);
+              tf::Quaternion orientation = tf::createQuaternionFromYaw((double)angle*3.14/(180*100));
+              
 
               if (!zero_orientation_set)
               {
-                zero_orientation = orientation;
-                zero_orientation_set = true;
+                  zero_orientation = orientation;
+                  zero_orientation_set = true;
               }
 
-              //http://answers.ros.org/question/10124/relative-rotation-between-two-quaternions/
               tf::Quaternion differential_rotation;
               differential_rotation = zero_orientation.inverse() * orientation;
-
               // calculate measurement time
               ros::Time measurement_time = ros::Time::now() + ros::Duration(time_offset_in_seconds);
-
               // publish imu message
               sensor_msgs::Imu imu;
               imu.header.stamp = measurement_time;
               imu.header.frame_id = imu_frame_id;
-
               quaternionTFToMsg(differential_rotation, imu.orientation);
-
               // i do not know the orientation covariance
               imu.orientation_covariance[0] = 1000000;
               imu.orientation_covariance[1] = 0;
@@ -147,32 +129,25 @@ int main(int argc, char** argv)
               imu.orientation_covariance[6] = 0;
               imu.orientation_covariance[7] = 0;
               imu.orientation_covariance[8] = 0.000001;
-
               // angular velocity is not provided
               imu.angular_velocity_covariance[0] = -1;
-
               // linear acceleration is not provided
               imu.linear_acceleration_covariance[0] = -1;
-
               imu_pub.publish(imu);
-
               // publish tf transform
               static tf::TransformBroadcaster br;
               tf::Transform transform;
               transform.setRotation(differential_rotation);
               br.sendTransform(tf::StampedTransform(transform, measurement_time, tf_parent_frame_id, tf_frame_id));
-            }
-          }
-          else
-          {
-            // line incomplete, remember already received characters
-            partial_line = input;
-          }
-        }
-        else  // ser not available
-        {
 
+          }else{
+              ROS_ERROR_STREAM("NOT found " );
+          } 
+
+          //ROS_ERROR_STREAM("input: " << input.size());
+          //ROS_ERROR_STREAM("input_str: " << string_to_hex(input));
         }
+          
       }
       else
       {
@@ -193,6 +168,8 @@ int main(int argc, char** argv)
 
         if(ser.isOpen())
         {
+          //ser.write("$MIA,I,B,115200,R,10,D,Y,Y*C4");
+          ser.write("$MIB,RESET*87");
           ROS_DEBUG_STREAM("Serial port " << ser.getPort() << " initialized.");
         }
         else
