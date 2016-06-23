@@ -1,4 +1,4 @@
-port: /dev/ttyACM0
+port: /dev/dashgo
 baud: 115200
 timeout: 0.1
 rate: 50
