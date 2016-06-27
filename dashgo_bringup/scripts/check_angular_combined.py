@@ -34,7 +34,7 @@ class CalibrateAngular():
         r = rospy.Rate(self.rate)
         
         # The test angle is 360 degrees
-        self.test_angle = radians(rospy.get_param('~test_angle', 360.0))
+        self.test_angle = radians(rospy.get_param('~test_angle', 90.0))
 
         self.speed = rospy.get_param('~speed', 0.5) # radians per second
         self.tolerance = radians(rospy.get_param('tolerance', 1)) # degrees converted to radians

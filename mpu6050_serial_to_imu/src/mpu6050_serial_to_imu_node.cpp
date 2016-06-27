@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("imu", 50);
   ros::ServiceServer service = nh.advertiseService("set_zero_orientation", set_zero_orientation);
 
-  ros::Rate r(1000); // 1000 hz
+  ros::Rate r(50); // 1000 hz
 
   while(ros::ok())
   {
