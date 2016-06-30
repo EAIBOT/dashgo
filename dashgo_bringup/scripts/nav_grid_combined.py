@@ -100,7 +100,7 @@ class NavSquare():
         position = Point()
 
         # Cycle through the four sides of the square
-        for i in range(8):
+        for i in range(16):
             # Initialize the movement command
             move_cmd = Twist()
             
@@ -116,7 +116,7 @@ class NavSquare():
             # Keep track of the distance traveled
             distance = 0
             if (i%2==1):
-                goal_distance = 0.2 
+                goal_distance = 0.1 
             else:
                 goal_distance = 1.0
             # Enter the loop to move along a side

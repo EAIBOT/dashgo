@@ -79,7 +79,7 @@ int main(int argc, char** argv)
             // parse line, get quaternion values
             if (input.compare(0,2,"$\x02") == 0 && (input.size() == 14))
             {
-              if(i%10==0){
+              //if(i%10==0){
               uint w = (((0xff &(char)input[2]) << 8) | 0xff &(char)input[3]);
               ROS_DEBUG("w = %04x", w );
 
@@ -163,8 +163,8 @@ int main(int argc, char** argv)
               tf::Transform transform;
               transform.setRotation(differential_rotation);
               br.sendTransform(tf::StampedTransform(transform, measurement_time, tf_parent_frame_id, tf_frame_id));
-              }
-              i++;
+              //}
+              //i++;
             }
           }
           else
