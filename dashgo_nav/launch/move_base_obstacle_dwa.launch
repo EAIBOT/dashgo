@@ -1,6 +1,6 @@
 <launch>
 
-  <include file="$(find dashgo_nav)/launch/move_base.launch" />
+  <include file="$(find dashgo_nav)/launch/move_base_dwa.launch" />
   
   <!-- Run the map server with a blank map -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find dashgo_nav)/maps/blank_map.yaml"/>

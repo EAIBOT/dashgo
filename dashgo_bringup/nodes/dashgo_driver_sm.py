@@ -37,33 +37,6 @@ from geometry_msgs.msg import Quaternion, Twist, Pose
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Int16
 from tf.broadcaster import TransformBroadcaster
- 
-ODOM_POSE_COVARIANCE = [1e-3, 0, 0, 0, 0, 0, 
-                        0, 1e-3, 0, 0, 0, 0,
-                        0, 0, 1e6, 0, 0, 0,
-                        0, 0, 0, 1e6, 0, 0,
-                        0, 0, 0, 0, 1e6, 0,
-                        0, 0, 0, 0, 0, 1e3]
-ODOM_POSE_COVARIANCE2 = [1e-9, 0, 0, 0, 0, 0, 
-                         0, 1e-3, 1e-9, 0, 0, 0,
-                         0, 0, 1e6, 0, 0, 0,
-                         0, 0, 0, 1e6, 0, 0,
-                         0, 0, 0, 0, 1e6, 0,
-                         0, 0, 0, 0, 0, 1e-9]
-
-ODOM_TWIST_COVARIANCE = [1e-3, 0, 0, 0, 0, 0, 
-                         0, 1e-3, 0, 0, 0, 0,
-                         0, 0, 1e6, 0, 0, 0,
-                         0, 0, 0, 1e6, 0, 0,
-                         0, 0, 0, 0, 1e6, 0,
-                         0, 0, 0, 0, 0, 1e3]
-ODOM_TWIST_COVARIANCE2 = [1e-9, 0, 0, 0, 0, 0, 
-                          0, 1e-3, 1e-9, 0, 0, 0,
-                          0, 0, 1e6, 0, 0, 0,
-                          0, 0, 0, 1e6, 0, 0,
-                          0, 0, 0, 0, 1e6, 0,
-                          0, 0, 0, 0, 0, 1e-9]
-
 
 SERVO_MAX = 180
 SERVO_MIN = 0
@@ -332,11 +305,13 @@ class Arduino:
         self.drive(0, 0)
 
     def ping(self, pin):
-        ''' The srf05/Ping command queries an SRF05/Ping sonar sensor
-            connected to the General Purpose I/O line pinId for a distance,
-            and returns the range in cm.  Sonar distance resolution is integer based.
-        '''
-        return self.execute('p %d' %pin);
+        values = self.execute_array('p')
+        if len(values) != 4:
+            print "Encoder count was not 4"
+            raise SerialException
+            return None
+        else:
+            return values
 
     def get_pidin(self):
         values = self.execute_array('i')
@@ -416,7 +391,8 @@ class BaseController:
         self.last_cmd_vel = now
 
         # Subscriptions
-        rospy.Subscriber("cmd_vel", Twist, self.cmdVelCallback)
+        #rospy.Subscriber("cmd_vel", Twist, self.cmdVelCallback)
+        rospy.Subscriber("smoother_cmd_vel", Twist, self.cmdVelCallback)
         
         # Clear any old odometry info
         self.arduino.reset_encoders()
@@ -461,21 +437,21 @@ class BaseController:
     def poll(self):
         now = rospy.Time.now()
         if now > self.t_next:
-            #try:
-            #    left_pidin, right_pidin = self.arduino.get_pidin()
-            #except:
-            #    rospy.logerr("getpidout exception count: ")
-            #    return
+            try:
+                left_pidin, right_pidin = self.arduino.get_pidin()
+            except:
+                rospy.logerr("getpidout exception count: ")
+                return
 
-            #self.lEncoderPub.publish(left_pidin)
-            #self.rEncoderPub.publish(right_pidin)
-            #try:
-            #    left_pidout, right_pidout = self.arduino.get_pidout()
-            #except:
-            #    rospy.logerr("getpidout exception count: ")
-            #    return
-            #self.lPidoutPub.publish(left_pidout)
-            #self.rPidoutPub.publish(right_pidout)
+            self.lEncoderPub.publish(left_pidin)
+            self.rEncoderPub.publish(right_pidin)
+            try:
+                left_pidout, right_pidout = self.arduino.get_pidout()
+            except:
+                rospy.logerr("getpidout exception count: ")
+                return
+            self.lPidoutPub.publish(left_pidout)
+            self.rPidoutPub.publish(right_pidout)
             # Read the encoders
             try:
                 left_enc, right_enc = self.arduino.get_encoder_counts()
@@ -554,14 +530,6 @@ class BaseController:
             odom.twist.twist.linear.x = vxy
             odom.twist.twist.linear.y = 0
             odom.twist.twist.angular.z = vth
-
-            # todo sensor_state.distance == 0
-            #if self.v_des_left == 0 and self.v_des_right == 0:
-            #    odom.pose.covariance = ODOM_POSE_COVARIANCE2
-            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE2
-            #else:
-            #    odom.pose.covariance = ODOM_POSE_COVARIANCE
-            #    odom.twist.covariance = ODOM_TWIST_COVARIANCE
 
             self.odomPub.publish(odom)
             

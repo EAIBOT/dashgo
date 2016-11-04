@@ -21,9 +21,9 @@
       <origin xyz="${torso_offset_x} ${torso_offset_y} ${torso_offset_z}" rpy="0 0 0" />
    </torso>
 -->
-
+<!--
  <joint name="laser" type="fixed">
-    <origin xyz="0.00 0.00 0.20" rpy="0 0 0" />
+    <origin xyz="0.15 0.00 0.20" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="base_laser_link" />
   </joint>
@@ -43,6 +43,24 @@
         izz="0.0001" />
     </inertial>
   </link>
+-->
+
+  <link name="front_flag">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.05 0.05 0.001" />
+        </geometry>
+        <material name="TransparentGreen" />
+      </visual>
+  </link>
+
+  <joint name="front_point_flag" type="fixed">
+    <origin xyz="0.2 0 ${base_length/2}" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="front_flag" />
+  </joint>
+
 </robot>
 
 
