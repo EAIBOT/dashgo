@@ -1,11 +1,13 @@
 <launch>
+<!--
    <node name="arduino" pkg="dashgo_bringup" type="dashgo_driver.py" output="screen">
       <rosparam file="$(find dashgo_bringup)/config/my_dashgo_params.yaml" command="load" />
    </node>
-
-  <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-  <param name="serial_port"         type="string" value="/dev/rplidar"/>  
-  <param name="serial_baudrate"     type="int"    value="115200"/>
+-->
+  <include file="$(find dashgo_bringup)/launch/bringup_smoother.launch" />
+  <node name="flashgo"  pkg="flashgo"  type="flashgo_node" output="screen">
+  <param name="serial_port"         type="string" value="/dev/flashlidar"/>  
+  <param name="serial_baudrate"     type="int"    value="230400"/>
   <param name="frame_id"            type="string" value="laser_frame"/>
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
@@ -18,7 +20,7 @@
   <include file="$(find dashgo_nav)/launch/teb_move_base.launch" />
   
   <!-- Run the map server with a blank map -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find dashgo_nav)/maps/blank_map.yaml" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find dashgo_nav)/maps/my_map.yaml" />
 
   <!-- Run a static transform between /odom and /map -->
   <node pkg="tf" type="static_transform_publisher" name="odom_map_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />

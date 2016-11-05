@@ -3,7 +3,7 @@
       <rosparam file="$(find dashgo_bringup)/config/my_dashgo_params.yaml" command="load" />
    </node>
 
- <node name="flashgo"          pkg="flashgo"  type="flashgo_node" output="screen">
+ <node name="flashgo"  pkg="flashgo"  type="flashgo_node" output="screen">
   <param name="serial_port"         type="string" value="/dev/flashlidar"/>  
   <param name="serial_baudrate"     type="int"    value="230400"/>
   <param name="frame_id"            type="string" value="laser_frame"/>
@@ -15,8 +15,7 @@
 
  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4" 
     args="0.0 0.0 0.2 0.0 3.1415926  0.0 /base_link /laser_frame 40" />
-  
-  <include file="$(find dashgo_nav)/launch/gmapping.launch"/>
-  <include file="$(find dashgo_nav)/launch/teb_move_base.launch"/>
 
+  <include file="$(find dashgo_nav)/launch/gmapping.launch"/>
+  <include file="$(find dashgo_nav)/launch/move_base.launch"/>
 </launch>
