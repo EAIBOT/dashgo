@@ -416,7 +416,7 @@ class BaseController:
         self.last_cmd_vel = now
 
         # Subscriptions
-        rospy.Subscriber("cmd_vel", Twist, self.cmdVelCallback)
+        rospy.Subscriber("cmd_vel_1", Twist, self.cmdVelCallback)
         
         # Clear any old odometry info
         self.arduino.reset_encoders()
@@ -428,12 +428,6 @@ class BaseController:
         rospy.loginfo("Started base controller for a base of " + str(self.wheel_track) + "m wide with " + str(self.encoder_resolution) + " ticks per rev")
         rospy.loginfo("Publishing odometry data at: " + str(self.rate) + " Hz using " + str(self.base_frame) + " as base frame")
 
-        self.lEncoderPub = rospy.Publisher('Lencoder', Int16)
-        self.rEncoderPub = rospy.Publisher('Rencoder', Int16)
-        self.lPidoutPub = rospy.Publisher('Lpidout', Int16)
-        self.rPidoutPub = rospy.Publisher('Rpidout', Int16)
-        self.lVelPub = rospy.Publisher('Lvel', Int16)
-        self.rVelPub = rospy.Publisher('Rvel', Int16)
         
     def setup_pid(self, pid_params):
         # Check to see if any PID parameters are missing
@@ -479,7 +473,7 @@ class BaseController:
             # Read the encoders
             try:
                 left_enc, right_enc = self.arduino.get_encoder_counts()
-                #rospy.loginfo("left_enc: " + str(left_enc)+"right_enc: " + str(right_enc))
+                rospy.loginfo("left_enc: " + str(left_enc)+"right_enc: " + str(right_enc))
             except:
                 self.bad_encoder_count += 1
                 rospy.logerr("Encoder exception count: " + str(self.bad_encoder_count))
@@ -586,8 +580,6 @@ class BaseController:
                 self.v_right -= self.max_accel
                 if self.v_right < self.v_des_right:
                     self.v_right = self.v_des_right
-            self.lVelPub.publish(self.v_left)
-            self.rVelPub.publish(self.v_right)            
 
             # Set motor speeds in encoder ticks per PID loop
             if not self.stopped:
@@ -623,7 +615,7 @@ class BaseController:
 
 class ArduinoROS():
     def __init__(self):
-        rospy.init_node('Arduino', log_level=rospy.DEBUG)
+        rospy.init_node('Arduino_1', log_level=rospy.DEBUG)
                 
         # Cleanup when termniating the node
         rospy.on_shutdown(self.shutdown)
@@ -652,7 +644,7 @@ class ArduinoROS():
         self.cmd_vel = Twist()
   
         # A cmd_vel publisher so we can stop the robot when shutting down
-        self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
+        self.cmd_vel_pub = rospy.Publisher('cmd_vel_1', Twist, queue_size=5)
         
         # Initialize the controlller
         self.controller = Arduino(self.port, self.baud, self.timeout)

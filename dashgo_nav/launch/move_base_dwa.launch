@@ -1,12 +1,16 @@
 <launch>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
     <rosparam file="$(find dashgo_nav)/config/dashgo/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find dashgo_nav)/config/dashgo/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find dashgo_nav)/config/dashgo/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find dashgo_nav)/config/dashgo/global_costmap_params.yaml" command="load" />
+    <rosparam command="load" file="$(find dashgo_nav)/config/dashgo/dwa_local_planner_params.yaml"/>
+<!--
     <rosparam file="$(find dashgo_nav)/config/dashgo/base_local_planner_params.yaml" command="load" />
 
      <rosparam file="$(find dashgo_nav)/config/nav_obstacles_params.yaml" command="load" />
+-->
   </node>
   
 </launch>

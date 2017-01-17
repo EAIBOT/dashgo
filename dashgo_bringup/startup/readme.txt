@@ -1,3 +1,6 @@
+sudo sh create_dashgo_udev.sh
+sudo sh create_flashlidar_udev.sh
+----------------
 cd 
 sudo cp dashgo-start /usr/sbin/
 sudo chmod +x /usr/sbin/dashgo-start

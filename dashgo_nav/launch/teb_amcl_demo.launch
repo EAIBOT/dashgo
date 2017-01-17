@@ -7,17 +7,22 @@
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
+
  <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser4" 
     args="0.0 0.0 0.0 0.0 3.1415926 0.0 /base_link /laser_frame 40" />
+  <!-- Map server -->
+  <arg name="map_file" default="$(find dashgo_nav)/maps/map_1st.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-  <!-- Launch move_base and load all navigation parameters -->
-  <include file="$(find dashgo_nav)/launch/move_base.launch" />
-  
-  <!-- Run the map server with a blank map -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find dashgo_nav)/maps/blank_map.yaml" />
-
-  <!-- Run a static transform between /odom and /map -->
-  <node pkg="tf" type="static_transform_publisher" name="odom_map_broadcaster" args="0 0 0 0 0 0 /map /odom 100" />
+  <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+  <arg name="initial_pose_a" default="0.0"/>
+  <include file="$(find dashgo_nav)/launch/amcl.launch.xml">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+<include file="$(find dashgo_nav)/launch/teb_move_base.launch"/>
 
 </launch>
