@@ -17,5 +17,6 @@
     <param name="range_min" value="0.45"/>
     <!--返回的最大范围（以米为单位）。大于此范围将输出为+ Inf。-->
     <param name="range_max" value="8.00"/>
+    <param name="output_frame_id" value="camera_link"/>
   </node>
 </launch>

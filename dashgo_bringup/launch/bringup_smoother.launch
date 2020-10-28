@@ -1,8 +1,9 @@
+<?xml version="1.0"?>
+
 <launch>
    <node name="arduino" pkg="dashgo_bringup" type="dashgo_driver_sm.py" output="screen">
       <rosparam file="$(find dashgo_bringup)/config/my_dashgo_params.yaml" command="load" />
    </node>
-
 
   <arg name="node_name"             value="velocity_smoother"/>
   <arg name="nodelet_manager_name"  value="nodelet_manager"/>

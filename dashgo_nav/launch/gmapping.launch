@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <arg name="scan_topic"  default="scan" />
   <arg name="base_frame"  default="base_footprint"/>

@@ -17,6 +17,7 @@ sudo apt-get install ros-melodic-teleop-twist-keyboard
 sudo apt-get install ros-melodic-move-base-msgs libghc-sdl-image-dev libsdl-image1.2-dev ros-melodic-navigation ros-melodic-slam-gmapping ros-melodic-teb-local-planner
 sudo apt-get install ros-melodic-yujin-ocs
 sudo apt-get install ros-melodic-depthimage-to-laserscan
+sudo apt-get install ros-melodic-pointcloud-to-laserscan
 
 mkdir -p ~/dashgo/src
 cd dashgo/src/
@@ -35,6 +36,7 @@ sudo apt-get install librealsense2-dev
 sudo apt-get install librealsense2-dbg
 
 sudo apt-get install ros-melodic-realsense2-camera
+sudo apt-get install ros-melodic-realsense2-description
 sudo apt install ros-melodic-rgbd-launch
 
 

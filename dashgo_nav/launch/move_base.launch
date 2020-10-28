@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
     <rosparam file="$(find dashgo_nav)/config/dashgo/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -6,7 +8,7 @@
     <rosparam file="$(find dashgo_nav)/config/dashgo/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find dashgo_nav)/config/dashgo/base_local_planner_params.yaml" command="load" />
 
-     <rosparam file="$(find dashgo_nav)/config/nav_obstacles_params.yaml" command="load" />
+    <rosparam file="$(find dashgo_nav)/config/nav_obstacles_params.yaml" command="load" />
   </node>
   
 </launch>

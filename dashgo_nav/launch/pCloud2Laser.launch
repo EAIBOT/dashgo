@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+<!--
+    <include file="$(find dashgo_nav)/launch/rs_camera.launch"></include>
+-->
+    <node name="pointcloud_to_laserscan" pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node">
+        <remap from="cloud_in" to="/camera/depth/color/points"/>
+        <remap from="scan" to="/scan"/>
+        <rosparam>
+            target_frame: camera_link
+            min_height: -0.1
+            max_height: 1.7
+            range_min: 0.175
+            range_max: 2.0
+        </rosparam>
+   </node>
+</launch>
